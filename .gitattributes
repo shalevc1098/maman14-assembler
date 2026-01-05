@@ -1,0 +1,7 @@
+* text=auto
+*.c text eol=lf
+*.h text eol=lf
+*.md text eol=lf
+*.as text eol=lf
+*.am text eol=lf
+makefile text eol=lf

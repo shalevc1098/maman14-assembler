@@ -1,0 +1,9 @@
+obj/
+assembler
+*.o
+*.exe
+*.ob
+*.ent
+*.ext
+*.am
+.planning/
