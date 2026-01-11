@@ -94,7 +94,7 @@ Bool hash_table_insert(HashTable *table, char *key, void *data) {
      * keys aside of our key) */
     while (current) {
         /* if key is in table, update it and return true */
-        if (!strcmp(current->key, key)) {
+        if (strcmp(current->key, key) == 0) {
             /* overwrite current->data with our new data */
             current->data = data;
             return true;
@@ -139,7 +139,7 @@ Bool hash_table_contains_key(HashTable *table, char *key) {
     /* as long as current is not NULL */
     while (current) {
         /* if key is in table, return its data */
-        if (!strcmp(current->key, key))
+        if (strcmp(current->key, key) == 0)
             return true;
         /* current now points to next node (if any) */
         current = current->next;
@@ -156,7 +156,7 @@ void *hash_table_lookup(HashTable *table, char *key) {
     /* as long as current is not NULL */
     while (current) {
         /* if key is in table, return its data */
-        if (!strcmp(current->key, key))
+        if (strcmp(current->key, key) == 0)
             return current->data;
         /* current now points to next node (if any) */
         current = current->next;
