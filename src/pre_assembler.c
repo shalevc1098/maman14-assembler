@@ -48,13 +48,19 @@ Bool pre_assemble(char *filename) {
     char **prev_macro_lines;
     /* macros table */
     HashTable *macros = NULL;
+    /* labels array */
+    char **labels = NULL;
+    /* labels array count */
+    int label_count = 0;
+    /* temp variable to store labels array before realloc (used for cleanup) */
+    char **prev_labels = NULL;
     /* parsed macro name */
     char macro_name[MAX_LINE];
     /* input file path */
     char input_file_path[MAX_LINE];
     /* file after macro expansion path */
     char expanded_file_path[MAX_LINE];
-    /* used to track macro_to_expand line array index */
+    /* index tracker */
     int i;
     /* used to track current line num */
     int line_num = 0;
@@ -95,6 +101,41 @@ Bool pre_assemble(char *filename) {
         line_num++;
         /* gets first word from line */
         token_ptr = get_token(line, token);
+
+        /* checks if label conflicts with macro name */
+        if (token[0] != '\0' && token[strlen(token) - 1] == ':') {
+            /* truncate ':' */
+            token[strlen(token) - 1] = '\0';
+            /* if a macro with name of label was already parsed, throw error and cleanup */
+            if (hash_table_lookup(macros, token)) {
+                ERROR_LINE(line_num, ERR_LABEL_IS_MACRO_NAME);
+                goto cleanup;
+            }
+            /* backup labels array before realloc */
+            prev_labels = labels;
+            /* realloc labels array by +1 and assign it to labels */
+            labels = realloc(labels, (label_count + 1) * sizeof(char *));
+            /* if realloc failed, throw error, assign prev_labels to labels and cleanup */
+            if (!labels) {
+                ERROR(ERR_MEMORY_ALLOC);
+                labels = prev_labels;
+                goto cleanup;
+            }
+            /* allocate slot for label */
+            labels[label_count] = malloc(strlen(token) + 1);
+            /* if allocation failed, throw error and cleanup */
+            if (!labels[label_count]) {
+                ERROR(ERR_MEMORY_ALLOC);
+                goto cleanup;
+            }
+            /* copy label to labels[label_count] */
+            strcpy(labels[label_count], token);
+            /* increase label count by +1 */
+            label_count++;
+            /* restore ':' */
+            token[strlen(token)] = ':';
+        }
+
         /* if line is a macro */
         if (strcmp(token, "mcro") == 0) {
             /* gets macro name */
@@ -120,6 +161,17 @@ Bool pre_assemble(char *filename) {
             if (hash_table_contains_key(macros, macro_name)) {
                 ERROR_LINE(line_num, ERR_MACRO_ALREADY_DEFINED);
                 goto cleanup;
+            }
+            /* if there is at least one label, check if a label with macro_name was already defined */
+            if (labels) {
+                /* loop all labels */
+                for (i = 0; i < label_count; i++) {
+                    /* if macro_name found in labels array, throw error and cleanup */
+                    if (strcmp(labels[i], macro_name) == 0) {
+                        ERROR_LINE(line_num, ERR_MACRO_NAME_IS_LABEL);
+                        goto cleanup;
+                    }
+                }
             }
             /* allocate new Macro */
             macro = malloc(sizeof(Macro));
@@ -160,7 +212,7 @@ Bool pre_assemble(char *filename) {
             in_macro = false;
             /* if in_macro flag enabled */
         } else if (in_macro) {
-            /* backup prev macro lines before realloc */
+            /* backup macro lines before realloc */
             prev_macro_lines = macro->lines;
             /* realloc macro lines array by +1 and assign it to macro->lines */
             macro->lines = realloc(macro->lines, (macro->line_count + 1) * sizeof(char *));
@@ -229,6 +281,16 @@ cleanup:
     /* if macros table created, free it */
     if (macros)
         hash_table_free(macros, free_macro);
+
+    /* if labels array exists, free it and its members */
+    if (labels) {
+        /* loop all labels */
+        for (i = 0; i < label_count; i++)
+            /* free label */
+            free(labels[i]);
+        /* free labels array */
+        free(labels);
+    }
 
     /* return whether the operation succeeded or failed */
     return success;

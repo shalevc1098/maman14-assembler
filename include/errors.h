@@ -18,6 +18,8 @@
 #define ERR_MACRO_ALREADY_DEFINED "macro already defined"
 #define ERR_MACRO_START_WITHOUT_END "mcro without mcroend"
 #define ERR_MACRO_END_WITHOUT_START "mcroend without mcro"
+#define ERR_LABEL_IS_MACRO_NAME "label name conflicts with macro name"
+#define ERR_MACRO_NAME_IS_LABEL "macro name conflicts with label name"
 
 /* memory errors */
 #define ERR_MEMORY_ALLOC "memory allocation failed"
