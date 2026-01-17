@@ -4,4 +4,6 @@ IndentWidth: 4
 UseTab: Never
 ColumnLimit: 120
 AllowShortFunctionsOnASingleLine: None
+IndentCaseLabels: true
+IndentGotoLabels: false
 ---
