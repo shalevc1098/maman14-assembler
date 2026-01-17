@@ -2,7 +2,7 @@
 #ifndef PRE_ASSEMBLER_H
 #define PRE_ASSEMBLER_H
 
-#include "globals.h"
+#include "bool.h"
 
 /* struct for macros */
 typedef struct {

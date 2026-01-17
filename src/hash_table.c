@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "globals.h"
+#include "bool.h"
 #include "hash_table.h"
 #include "string.h"
 
@@ -123,7 +123,7 @@ Bool hash_table_insert(HashTable *table, char *key, void *data) {
     node->next = table->buckets[index];
     /* update the head of buckets[index] with our new node */
     table->buckets[index] = node;
-    /* increment count by one (because we added new node to table) */
+    /* increment count for newly added node */
     table->count++;
     /* check if table needs resizing */
     if (table->count > table->size * 0.7)
@@ -163,6 +163,21 @@ void *hash_table_lookup(HashTable *table, char *key) {
     }
     /* return NULL because key not found in table */
     return NULL;
+}
+
+void hash_table_foreach(HashTable *table, void (*callback)(char *key, void *data, void *context), void *context) {
+    /* index tracker */
+    int i;
+    /* would be the current node in the bucket chain */
+    Node *node;
+    /* a loop that goes through all buckets */
+    for (i = 0; i < table->size; i++) {
+        /* loop all nodes in buckets[i] */
+        for (node = table->buckets[i]; node != NULL; node = node->next) {
+            /* call the callback function with key, data, and user provided context */
+            callback(node->key, node->data, context);
+        }
+    }
 }
 
 void hash_table_free(HashTable *table, void (*free_data)(void *)) {
