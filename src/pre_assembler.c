@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "assembler.h"
+#include "bool.h"
 #include "errors.h"
-#include "globals.h"
 #include "hash_table.h"
+#include "helpers.h"
 #include "parser.h"
 #include "pre_assembler.h"
 
@@ -78,14 +80,14 @@ Bool pre_assemble(char *filename) {
     input_file = fopen(input_file_path, "r");
     /* if failed, throw error and cleanup */
     if (!input_file) {
-        ERROR(ERR_CANNOT_OPEN_FILE);
+        ERROR_FILE(ERR_CANNOT_OPEN_FILE, input_file_path);
         goto cleanup;
     }
     /* open input_file as write-only */
     expanded_file = fopen(expanded_file_path, "w");
     /* if failed, throw error and cleanup */
     if (!expanded_file) {
-        ERROR(ERR_CANNOT_CREATE_FILE);
+        ERROR_FILE(ERR_CANNOT_CREATE_FILE, expanded_file_path);
         goto cleanup;
     }
     /* create macros table */
@@ -99,10 +101,16 @@ Bool pre_assemble(char *filename) {
     while (fgets(line, MAX_LINE, input_file)) {
         /* increase line counter */
         line_num++;
+
+        /* if line is longer than MAX_LINE, discard rest and skip (first pass will catch the error) */
+        if (strchr(line, '\n') == NULL && !feof(input_file)) {
+            discard_rest_of_line(input_file);
+            continue;
+        }
         /* gets first word from line */
         token_ptr = get_token(line, token);
 
-        /* checks if label conflicts with macro name */
+        /* if token is a label */
         if (token[0] != '\0' && token[strlen(token) - 1] == ':') {
             /* truncate ':' */
             token[strlen(token) - 1] = '\0';
@@ -134,6 +142,13 @@ Bool pre_assemble(char *filename) {
             label_count++;
             /* restore ':' */
             token[strlen(token)] = ':';
+            /* get next word after label */
+            token_ptr = get_token(token_ptr, token);
+            /* if next word is either mcro or mcroend, throw error and cleanup */
+            if (strcmp(token, "mcro") == 0 || strcmp(token, "mcroend") == 0) {
+                ERROR_LINE(line_num, ERR_LABEL_BEFORE_MACRO);
+                goto cleanup;
+            }
         }
 
         /* if line is a macro */
