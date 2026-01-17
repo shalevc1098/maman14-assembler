@@ -1,7 +1,16 @@
+#include <ctype.h>
 #include <string.h>
 
-#include "globals.h"
+#include "assembler.h"
+#include "bool.h"
+#include "instructions.h"
 #include "parser.h"
+
+/* reserved words - registers */
+const char *REGISTERS[] = {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", NULL};
+
+/* reserved words - directives */
+const char *DIRECTIVES[] = {".data", ".string", ".entry", ".extern", "mcro", "mcroend", NULL};
 
 char *skip_whitespace(char *str) {
     /* loops until the char at *str is not whitespace */
@@ -21,15 +30,15 @@ char *get_token(char *str, char *dest) {
         str++;        /* move str to next char */
     }
     *dest = '\0'; /* add NULL terminator at the end of dest */
-    return str;   /* return pointer to where we stopped */
+    return str;   /* return pointer to remaining string */
 }
 
 Bool is_instruction(char *name) {
     /* index tracker */
     int i;
-    for (i = 0; INSTRUCTIONS[i] != NULL; i++) {
-        /* compare name with INSTRUCTIONS[i] */
-        if (strcmp(name, INSTRUCTIONS[i]) == 0)
+    for (i = 0; INSTRUCTION_TABLE[i].name != NULL; i++) {
+        /* compare name with INSTRUCTION_TABLE[i].name */
+        if (strcmp(name, INSTRUCTION_TABLE[i].name) == 0)
             return true; /* if name is an instruction */
     }
     return false; /* if name is not an instruction */
@@ -62,12 +71,25 @@ Bool is_reserved_word(char *name) {
     return is_instruction(name) || is_register(name) || is_directive(name);
 }
 
-Bool is_empty_line(char *str) {
+Bool is_empty(char *str) {
     /* makes str to start from the first non-whitespace char */
     str = skip_whitespace(str);
     return *str == '\0' || *str == '\n';
 }
 
-Bool is_comment(char *str) {
-    return *str == ';';
+Bool is_number(char *str) {
+    /* index tracker */
+    int i;
+    /* if str is empty, return false */
+    if (*str == '\0')
+        return false;
+    /* loop all characters */
+    for (i = 0; str[i] != '\0'; i++) {
+        /* if character is not a valid number, return false */
+        if (!isdigit(str[i])) {
+            return false;
+        }
+    }
+    /* all characters are valid numbers, return true */
+    return true;
 }
