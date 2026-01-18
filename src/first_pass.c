@@ -12,6 +12,7 @@
 #include "instructions.h"
 #include "parser.h"
 #include "symbol_table.h"
+#include "warns.h"
 
 static void report_memory_overflow(int line_num, Bool *already_reported) {
     /* if already reported, return so we not spam */
@@ -510,6 +511,10 @@ AssemblerState *first_pass(char *filename) {
                 /* handled in second pass */
                 continue;
             } else if (strcmp(token, ".extern") == 0) {
+                /* warn if line has label, then continue as usual */
+                if (has_label)
+                    WARN_LINE(line_num, WARN_LABEL_BEFORE_EXTERN);
+
                 /* get next word */
                 token_ptr = get_token(token_ptr, token);
 
