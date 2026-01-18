@@ -7,8 +7,8 @@
 
 /* max memory */
 #define MAX_MEMORY 4096
-/* 80 chars + null */
-#define MAX_LINE 81
+/* 80 chars + newline + null */
+#define MAX_LINE 82
 /* 31 chars + null */
 #define MAX_LABEL 32
 /* where to start ic count from */
