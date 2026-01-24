@@ -192,7 +192,6 @@ AssemblerState *first_pass(char *filename) {
     Bool has_label = false;
     /* a flag to tell whether memory overflow error was already reported or not */
     Bool memory_overflow_reported = false;
-    /* a flag to tell whether .data directive number parse failed or not */
     /* current line from fgets */
     char line[MAX_LINE];
     /* used to track current line num */
