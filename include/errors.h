@@ -16,7 +16,6 @@
 #define ERR_STRING_MISSING "missing string in .string directive"
 #define ERR_STRING_INVALID "invalid string format"
 #define ERR_EXTERN_INVALID_SYMBOL "invalid symbol name in .extern"
-#define ERR_ENTRY_INVALID_SYMBOL "invalid symbol name in .entry"
 #define ERR_EXTERN_AND_LOCAL "symbol declared extern and defined locally"
 #define ERR_UNKNOWN_DIRECTIVE "unknown directive"
 
@@ -71,5 +70,8 @@
 /* symbol errors */
 #define ERR_SYMBOL_NOT_FOUND "undefined symbol"
 #define ERR_ENTRY_NOT_FOUND "symbol in .entry not defined"
+#define ERR_ENTRY_IS_EXTERN "symbol in .entry cannot be external"
+#define ERR_ENTRY_INVALID_SYMBOL "invalid symbol name in .entry"
+#define ERR_RELATIVE_EXTERNAL "relative addressing cannot use external symbol"
 
 #endif
