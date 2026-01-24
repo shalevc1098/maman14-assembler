@@ -6,4 +6,5 @@ ColumnLimit: 120
 AllowShortFunctionsOnASingleLine: None
 IndentCaseLabels: true
 IndentGotoLabels: false
+ReflowComments: false
 ---
