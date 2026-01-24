@@ -139,17 +139,6 @@ static Bool is_number_in_range(long num) {
     return num >= MIN_NUMBER && num <= MAX_NUMBER;
 }
 
-static int get_addressing_mode(char *operand) {
-    if (*operand == '#')
-        return ADDR_IMMEDIATE;
-    else if (*operand == '%')
-        return ADDR_RELATIVE;
-    else if (*operand == 'r' && *(operand + 1) >= '0' && *(operand + 1) <= '7' && *(operand + 2) == '\0')
-        return ADDR_REGISTER;
-    else
-        return ADDR_DIRECT;
-}
-
 Bool is_valid_addressing_mode(char *operand, int mode) {
     Bool has_optional_plus_minus = false;
     switch (mode) {

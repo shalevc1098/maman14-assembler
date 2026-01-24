@@ -56,5 +56,7 @@ typedef struct {
 Bool has_memory(int ic, int dc, int additional);
 /* frees assembler state, returns NULL */
 AssemblerState *free_assembler_state(AssemblerState *state);
+/* returns addressing mode of operand */
+int get_addressing_mode(char *operand);
 
 #endif
