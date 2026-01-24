@@ -192,6 +192,8 @@ Bool second_pass(char *filename, AssemblerState *state) {
                     if (!symbol) {
                         ERROR_LINE(line_num, ERR_SYMBOL_NOT_FOUND);
                         has_errors = true;
+                        /* advance code_index past remaining operand words */
+                        code_index += instruction_info->num_operands;
                         continue;
                     }
                 }
@@ -200,6 +202,8 @@ Bool second_pass(char *filename, AssemblerState *state) {
                 if (operand1_addressing_mode == ADDR_RELATIVE && symbol->type == SYMBOL_EXTERNAL) {
                     ERROR_LINE(line_num, ERR_RELATIVE_EXTERNAL);
                     has_errors = true;
+                    /* advance code_index past remaining operand words */
+                    code_index += instruction_info->num_operands;
                     continue;
                 }
 
@@ -242,6 +246,8 @@ Bool second_pass(char *filename, AssemblerState *state) {
                     if (!symbol) {
                         ERROR_LINE(line_num, ERR_SYMBOL_NOT_FOUND);
                         has_errors = true;
+                        /* advance code_index past operand2 word */
+                        code_index++;
                         continue;
                     }
                 }
@@ -250,6 +256,8 @@ Bool second_pass(char *filename, AssemblerState *state) {
                 if (operand2_addressing_mode == ADDR_RELATIVE && symbol->type == SYMBOL_EXTERNAL) {
                     ERROR_LINE(line_num, ERR_RELATIVE_EXTERNAL);
                     has_errors = true;
+                    /* advance code_index past operand2 word */
+                    code_index++;
                     continue;
                 }
 
