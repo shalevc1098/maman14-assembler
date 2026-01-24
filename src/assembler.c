@@ -17,6 +17,8 @@ AssemblerState *free_assembler_state(AssemblerState *state) {
         free(state->code);
         /* free data array */
         free(state->data);
+        /* free externals array */
+        free(state->externals);
         /* free state */
         free(state);
     }

@@ -35,13 +35,21 @@ typedef struct {
     ARE are;
 } Word;
 
+/* tracks where an external symbol is used (for .ext output) */
+typedef struct {
+    char name[MAX_LABEL];
+    int address;
+} External;
+
 /* shared state between assembler passes */
 typedef struct {
     HashTable *symbols;
     Word *code;
     Word *data;
+    External *externals;
     int ic;
     int dc;
+    int ec; /* external count */
 } AssemblerState;
 
 /* checks if program would have enough memory after adding "additional" to */
